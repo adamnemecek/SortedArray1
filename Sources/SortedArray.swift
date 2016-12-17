@@ -8,12 +8,10 @@
 
 import Foundation
 
-public struct SortedArray<Element: Comparable>: MutableCollection,
-    ExpressibleByArrayLiteral,
-Equatable {
-
+public struct SortedArray<Element: Comparable>: MutableCollection, ExpressibleByArrayLiteral, Equatable {
     public typealias SubSequence = ArraySlice<Element>
     public typealias Index = Int
+    public typealias IndexDistance = Int
 
     fileprivate
     var content: [Element] {
@@ -86,11 +84,11 @@ extension SortedArray {
         return
     }
 
-    public var min: Element? {
+    public func min() -> Element? {
         return first
     }
 
-    public var max: Element? {
+    public func max() -> Element? {
         return last
     }
 
@@ -120,17 +118,32 @@ extension SortedArray: CustomStringConvertible {
 }
 
 extension SortedArray: BidirectionalCollection {
+    @inline(__always)
     public func index(before index: Index) -> Index {
         return content.index(before: index)
     }
     
-    public func lastIndex(_ where: (Element) -> Bool) -> Index? {
+    public func lastIndex(where predicate: (Element) -> Bool) -> Index? {
         fatalError()
     }
+
+     @inline(__always)
+     public func index(_ i: Index, offsetBy n: Index) -> Index {
+         return i + n
+     }
+
+     @inline(__always)
+     public func formIndex(after i: inout Index) {
+         i += 1
+     }
+
+     @inline(__always)
+     public func distance(from start: Index, to end: Index) -> IndexDistance {
+         return end - start
+     }
 }
 
-extension SortedArray: RandomAccessCollection {
-    public typealias Indices = Array<Element>.Indices
+extension SortedArray: RandomAccessCollection  {
+     public typealias Indices = Array<Element>.Indices
 }
-
 
